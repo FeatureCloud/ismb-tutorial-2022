@@ -1,0 +1,57 @@
+fc_cross_validation:
+  input:
+    data: "data.csv" # Filename of your data
+    label_column: "target" # Label column name in your dara
+    sep: "," # Separation indicator in your file
+  output:
+    train: "train.csv" # Filename of the training set in each fold
+    test: "test.csv" # Filename of the test set in each fold
+    split_dir: "data" # Directory name containing the splits
+  cross_validation:
+    n_splits: 5 # Number of folds to be created
+    shuffle: true # Shuffle the data before creating the folds
+    stratify: true # Stratify the y values
+    random_state: 1 # Random state for reproducible splits
+
+fc_normalization:
+  input:
+    train: "train.csv" # Filename of training set
+    test: "test.csv" # Filename of test set
+  output:
+    train: "train_norm.csv" # Output filename of normalized training set
+    test: "test_norm.csv" # Output filename of normalized test set
+  format:
+    sep: "," # Separation indicator in your file
+    label: "target" # Label column name in your dara
+  split:
+    mode: "directory" # "directory" for CV splits, "file" else
+    dir: data # split_dir name of CV app, else "."
+  normalization: "variance" # Normalization mode. Only "variance" for now.
+
+fc_logistic_regression:
+  input:
+    train: "train_norm.csv" # Filename of training set
+    test: "test_norm.csv" # Filename of test set
+  output:
+    proba: "proba.csv" # Predicted probabilities on test set
+    pred: "pred.csv" # Predictions on test set
+    test: "test_norm.csv" # Test set
+  format:
+    sep: "," # Separation indicator in your file
+    label: "target" # Label column name in your dara
+  split:
+    mode: "directory" # "directory" for CV splits, "file" else
+    dir: data # split_dir name of CV app, else "."
+  algo:
+    max_iterations: 100 # Maximum number of iterations
+
+
+fc_classification_evaluation:
+  input:
+    y_true: "test_norm.csv" # File containing y true
+    y_pred: "pred.csv" # Prediction file generated in classifier app
+  format:
+    sep: "," # Separation indicator in your file
+  split:
+    mode: "directory" # "directory" for CV splits, "file" else
+    dir: data # split_dir name of CV app, else "."
